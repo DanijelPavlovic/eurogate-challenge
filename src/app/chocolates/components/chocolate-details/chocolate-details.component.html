@@ -1,0 +1,86 @@
+<div *ngIf="chocolate; else loading">
+  <div class="flex justify-center p-6">
+    <p-card class="w-full max-w-3xl sm:w-11/12 lg:w-8/12">
+      <ng-template #header>
+        <img
+          class="block mx-auto rounded-lg w-full"
+          ngSrc="/assets/images/chocolates.jpg"
+          [alt]="chocolate.name"
+          height="965"
+          width="1500"
+          priority
+        />
+      </ng-template>
+
+      <div *ngIf="!isEditMode; else formSection" class="flex justify-between items-center">
+        <div>
+          <div class="text-xl font-bold">{{ chocolate.name }}</div>
+          <div>
+            <span class="font-bold">Brand:</span> {{ chocolate.brand }}
+          </div>
+        </div>
+        <div>
+          <p-button
+            icon="pi pi-pencil"
+            [rounded]="true"
+            [text]="true"
+            (click)="isEditMode = !isEditMode"
+          />
+        </div>
+      </div>
+
+      <ng-template #formSection>
+        <app-chocolate-form
+          [chocolate]="chocolate"
+          (exitEdit)="isEditMode = false"
+        />
+      </ng-template>
+
+      <div *ngIf="chocolate.prices.length" class="w-full p-4 rounded-lg mt-6">
+        <h2 class="text-lg font-semibold text-left ml-4">Prices</h2>
+        <table class="min-w-full mt-4">
+          <thead>
+          <tr>
+            <th class="py-2 px-4 text-left">Price</th>
+            <th class="py-2 px-4 text-left">Amount</th>
+            <th class="py-2 px-4 text-right"></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr
+            *ngFor="let price of chocolate.prices; trackBy: trackByFn"
+            [ngClass]="{'border border-amber-500 rounded-xl animate-pulse': price === lowestPrice}"
+          >
+            <td class="py-2 px-4">
+              {{ price.price | currency:chocolate.currency:'symbol':'1.2-2' }}
+            </td>
+            <td class="py-2 px-4">
+              {{ price.amount }} {{ price.unit }}
+            </td>
+            <td class="py-2 px-4 text-right">
+              <a [href]="price.link" target="_blank" rel="noopener noreferrer" class="p-button font-bold text-sm">
+                <i class="pi pi-shopping-cart text-lg"></i>
+                Buy now
+              </a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #footer>
+        <div *ngIf="chartData" class="p-6 rounded-lg flex justify-center max-w-lg mx-auto">
+          <app-pie-chart
+            class="w-full"
+            [data]="chartData.data"
+            [options]="chartData.options"
+          />
+        </div>
+      </ng-template>
+    </p-card>
+  </div>
+</div>
+
+<ng-template #loading>
+  <p class="text-center">Loading...</p>
+</ng-template>
